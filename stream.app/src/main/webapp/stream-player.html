@@ -1,0 +1,201 @@
+<link href="/static/bower_components/polymer/polymer-micro.html" rel="import">
+<link href="/static/bower_components/paper-icon-button/paper-icon-button.html" rel="import">
+<link href="/static/bower_components/paper-progress/paper-progress.html" rel="import">
+
+<link href="/static/bower_components/iron-icons/iron-icons.html" rel="import">
+<link href="/static/bower_components/iron-icons/av-icons.html" rel="import">
+<link href="/static/bower_components/iron-ajax/iron-ajax.html" rel="import">
+
+<link href="/static/bower_components/paper-styles/paper-styles.html" rel="import">
+
+<!-- Sound manager init -->
+<script src="/static/soundmanager/script/soundmanager2-nodebug-jsmin.js"></script>
+	
+<style>
+	.stream-player-big-icon{
+	    height: 25vw;
+    	width: 25vw;
+		padding:0px !important;
+	}
+	
+	.now-playing-container{
+		padding-bottom: 1vh;
+	    font-size: 18px;
+	}
+	
+	.volume-progress-container{
+		text-align:center;
+	}
+	
+	.volume-progress{
+	    padding-left: 4%;
+		width: 90%;
+	}
+	
+	.loading-progress{
+		margin-left: 4%;
+		width: 90%;
+		--paper-progress-container-color: #64ffda;
+	}
+	 
+</style>
+
+<dom-module id="stream-player">
+	<template>
+		<div>
+			<div class="now-playing-container">
+		  		{{nowPlayingLastResponse}}
+		  	</div>
+			<div>
+				<paper-progress disabled="{{!playing}}" indeterminate="true" class="loading-progress" min="0" max="100"></paper-progress>
+			</div>
+		  	<div>
+				<paper-icon-button icon="icons:remove-circle-outline" class="stream-player-big-icon blue" on-tap="volumeDown"></paper-icon-button>
+				<paper-icon-button icon="{{playOrPauseIcon}}" class="stream-player-big-icon blue" on-tap="playOrStop"></paper-icon-button>
+				<paper-icon-button icon="icons:add-circle-outline" class="stream-player-big-icon blue" on-tap="volumeUp"></paper-icon-button>
+			</div>
+		  	<div class="volume-progress-container">
+		  		<paper-progress class="volume-progress" value="{{volume}}" min="0" max="100"></paper-progress>
+		  	</div>
+		</div>
+		<!-- Now playing request -->
+		<iron-ajax
+			id="nowPlayingAjax"
+    		auto
+		    url="http://192.168.1.106:8080/stream-app/nowPlaying"
+		    handle-as="text"
+		    last-response="{{nowPlayingLastResponse}}"
+		    method="GET"
+		    headers="{{nowPlayingHeaders}}">
+		</iron-ajax> 
+	</template>
+</dom-module>
+<script>
+	Polymer({
+		is:'stream-player',
+		properties: {
+			url:{
+				type:String,
+				value:'http://www.rapes.sk:8000/live.mp3'
+			},
+			firstPlay:{
+				value:true
+			},
+			reload:{
+				value:false
+			},
+			soundManagerLoaded:{
+				value:false
+			},
+			stream:{
+				computed: 'prepareStream(url,reload)',
+				notify:true
+			},
+			playOrPauseIcon:{
+				type:String,
+				notify:true,
+				computed:'getPlayOrPauseIcon(playing)'
+			},
+			playing:{
+				value:false,
+				notify:true
+			},
+			loaded:{
+				value:false,
+				notify:true
+			},
+			volume:{
+				value:50,
+				notify:true
+			},
+			nowPlayingHeaders:{
+				value:{"Access-Control-Allow-Origin": "http://rapes.sk",
+					   "Content-Type":"text/html"}
+			},
+			nowPlaying:{
+				type:String,
+				notify:true
+			}
+		},
+		
+		ready:function(e){
+			setInterval(function(){
+				this.nowPlayingAjax.generateRequest();
+			},3000);
+			
+			var polymer = this;
+			
+			//sound manager setup
+			soundManager.setup({
+				  url: '/static/soundmanager/swf',
+				  stream:true,
+				  onready: function() {
+					  polymer.soundManagerLoaded=true;
+					  polymer.reload=true;
+					  this.volume=polymer.volume;
+				  }
+				}
+			);
+			window.console.log("Stream Player Ready");
+		},
+		
+	    prepareStream:function(url,reload){
+	    	window.console.log("Preparing stream")
+	    	var polymer = this;
+	    	var newStream;
+	    	
+	    	if(this.soundManagerLoaded){
+		    	  newStream = soundManager.createSound({
+		    	  id:'stream',
+		    	  url:[url],
+		    	  autoLoad: true,
+		    	  onplay: function() {
+		    		  polymer.playing=true;
+		    		  },
+		    	  onstop:function(){
+		    		  polymer.playing=false;
+		    	  }
+		    	  });
+	    	}
+	    	
+	    	return newStream;
+	    },
+	    
+	    getPlayOrPauseIcon:function(playing){
+	    	return playing ? 'av:pause-circle-outline' : 'av:play-circle-outline';
+	    },
+	      
+		playOrStop:function(){
+			if(this.playing){
+				this.stop();
+			}else{
+				this.play();
+			}
+		},
+		
+		play:function(){
+			if(!this.firstPlay){
+				this.reload=!this.reload;
+				this.firstPlay=false;
+			}
+			
+			this.stream.play();
+			this.playing=true; 
+		},
+		
+		stop:function(){
+			this.stream.stop();
+			this.stream.destruct();	
+			this.playing=false;
+		},
+		volumeUp:function(){
+			this.volume=this.volume + 10;
+			soundManager.setVolume(this.volume);
+		},
+		
+		volumeDown:function(){
+			this.volume=this.volume - 10;
+			soundManager.setVolume(this.volume);
+		}
+	});
+</script>

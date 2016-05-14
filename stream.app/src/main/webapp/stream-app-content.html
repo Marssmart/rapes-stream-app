@@ -1,0 +1,73 @@
+
+
+<link href="/static/bower_components/polymer/polymer-micro.html" rel="import">
+
+<link href="/static/bower_components/iron-icons/iron-icons.html" rel="import">
+<link href="/static/bower_components/iron-icon/iron-icon.html" rel="import">
+<link href="/static/bower_components/iron-icons/av-icons.html" rel="import">
+
+<link href="/static/bower_components/neon-animation/neon-animated-pages.html" rel="import">
+<link href="/static/bower_components/neon-animation/neon-animatable.html" rel="import">
+<link href="/static/bower_components/neon-animation/animations/slide-from-left-animation.html" rel="import">
+<link href="/static/bower_components/neon-animation/animations/slide-right-animation.html" rel="import">
+<dom-module id="stream-app-content">
+	<style >
+	  .big {
+	    --iron-icon-height: 50vh;
+	    --iron-icon-width: 50vw;
+	    padding-left: 25vw;
+    	padding-top: 4vh;
+	  }
+	  
+	  .big-logo{
+	  	--iron-icon-height: 50vh;
+	    --iron-icon-width: 50vh;
+    	padding-top: 4vh;
+	  }
+	  
+	  .now-playing-container{
+	  	text-align:center;
+	  	height:15vh;
+	  	font-size:13vh;
+	  }
+	</style>
+	<template>
+		<div>
+			<neon-animated-pages selected="{{selectedPage}}"
+                     entry-animation="slide-from-left-animation"
+                     exit-animation="slide-right-animation">
+				  <!-- Not Playing -->
+				  <neon-animatable >
+					    <iron-icon icon="av:stop" class="big"></iron-icon>
+				  </neon-animatable>
+				  
+				  	<!--Playing -->
+				  <neon-animatable class="now-playing-container">
+				  		<!-- <iron-icon icon="av:play-arrow" class="big"></iron-icon> -->
+				  		<iron-icon src="/static/images/rapes_launcher_transparent.png" class="big-logo"></iron-icon>
+				  </neon-animatable>
+			</neon-animated-pages>
+		</div>
+	</template>
+</dom-module>
+<script>
+	Polymer({
+		is:"stream-app-content",
+		properties:{
+			playing:{
+				value:false,
+				notify:true
+			},
+			selectedPage:{
+				value:0,
+				notify:true,
+				computed:'computeSelectedPage(playing)'
+			}
+		},
+		
+		computeSelectedPage:function(isPlaying){
+			return isPlaying ? 1 : 0;
+		}
+		
+	});
+</script>

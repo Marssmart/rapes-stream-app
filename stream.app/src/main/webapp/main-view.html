@@ -1,0 +1,42 @@
+<!-- paper elements -->
+<link href="/static/bower_components/polymer/polymer-micro.html" rel="import">
+<link href="/static/bower_components/paper-scroll-header-panel/paper-scroll-header-panel.html" rel="import">
+<link href="/static/bower_components/paper-toolbar/paper-toolbar.html" rel="import">
+<link href="/static/bower_components/paper-toast/paper-toast.html" rel="import">
+
+<!-- custom elements -->
+<link href="stream-player.html" rel="import">
+<link href="stream-app-content.html" rel="import">
+
+<dom-module id="main-view">
+	<template>
+		<paper-scroll-header-panel class="flex main-scroll-panel" image="/static/images/logo_transparent.png">
+		    <div class="main-contianer container flex-vertical">
+		    	<paper-toolbar class="main-toolbar" >
+			    	 <img class="main-toolbar-img" src="/static/images/logo_transparent.png"/> 
+			    </paper-toolbar>
+				<div class="second-container flexchild-vertical">
+					<stream-app-content playing="{{streamIsPlaying}}"></stream-app-content>
+				</div>
+				<div class="bottom" style="text-align:center;">
+					<stream-player playing={{streamIsPlaying}} nowPlaying="{{actualSong}}" class="player"></stream-player>
+				</div>
+		    </div>
+	  	</paper-scroll-header-panel>
+	  	<paper-toast class="fit-bottom" id="main-toast"/>
+  	</template>
+</dom-module>
+<script>
+  Polymer({
+    is: 'main-view',
+    properties:{
+	    streamIsPlaying:{
+	  	  notify:true
+	    }
+    },
+    ready:function(){
+    	window.console.log("Client context loaded");
+    	ClientContextInterface.notifyPageLoaded();
+    }
+  });
+</script>

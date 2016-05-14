@@ -1,0 +1,60 @@
+<meta name="viewport" content="initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+<meta name="HandheldFriendly" content="true">
+<meta name="mobile-web-app-capable" content="yes">
+<!DOCTYPE html>
+<html>
+<head>
+<title>Rapes Stream Application</title>
+
+<!-- scripts -->
+<script src="/static/bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+
+<!-- paper elements -->
+<link href="/static/bower_components/polymer/polymer-micro.html" rel="import">
+
+
+<link href="main-view.html" rel="import">
+
+</head>
+<body fullbleed vertical layout >
+	<style>
+		html, body {
+		 	height: 100%;
+		  	margin: 0;
+		  	font-family:'CasperRegular', Helvetica, sans-serif;
+		}
+		.main-scroll-panel {
+		 	height: 100%;
+		}
+		
+		.main-toolbar{
+			height: 14vh;
+		}
+		
+		.main-toolbar-img{
+			padding-top:4vh;
+			height: 10vh;
+		}
+		
+		.player{
+			display: inline-flex;
+		}
+		
+		.second-container{
+			height: 60vh;
+		}
+		
+		.third-container{
+			width: 100%;
+			height: 40vh;
+			text-align:center;
+		}
+		
+		.main-contianer{
+			overflow: hidden;
+		}
+		
+	</style>
+	<main-view></main-view>
+</body>
+</html>
